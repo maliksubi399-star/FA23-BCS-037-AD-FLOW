@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Zap, Lock, Mail } from 'lucide-react';
 
 // Demo credentials
-const DEMO_EMAIL = 'admin@adflowpro.com';
-const DEMO_PASSWORD = 'adflow2024';
+const DEMO_EMAIL = 'maliksubhan@gmail.com';
+const DEMO_PASSWORD = '123456789';
 
 export default function Login({ onLogin }) {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function Login({ onLogin }) {
       navigate('/');
     } else {
       setLoading(false);
-      setError('Invalid email or password. Try admin@adflowpro.com / adflow2024');
+      setError('Invalid email or password. Try maliksubhan@gmail.com / 123456789');
       setShake(true);
       setTimeout(() => setShake(false), 600);
     }
