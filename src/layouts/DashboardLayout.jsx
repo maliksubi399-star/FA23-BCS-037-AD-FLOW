@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Activity, 
@@ -7,23 +7,39 @@ import {
   CreditCard, 
   Settings, 
   Calendar,
+  LogOut,
+  Zap,
 } from 'lucide-react';
 
 const navItems = [
-  { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { name: 'Campaigns', path: '/campaigns', icon: Target },
-  { name: 'Analytics', path: '/analytics', icon: Activity },
-  { name: 'Billing', path: '/billing', icon: CreditCard },
-  { name: 'Settings', path: '/settings', icon: Settings },
+  { name: 'Dashboard',  path: '/',          icon: LayoutDashboard },
+  { name: 'Campaigns',  path: '/campaigns', icon: Target },
+  { name: 'Analytics',  path: '/analytics', icon: Activity },
+  { name: 'Billing',    path: '/billing',   icon: CreditCard },
+  { name: 'Settings',   path: '/settings',  icon: Settings },
 ];
 
-export default function DashboardLayout() {
+export default function DashboardLayout({ user, onLogout }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/login', { replace: true });
+  };
+
+  // Derive initials from email (e.g. "admin@…" → "A")
+  const initials = user?.name
+    ? user.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+    : (user?.email?.[0] ?? 'U').toUpperCase();
+
   return (
     <div className="dashboard-layout">
       {/* Sidebar Navigation */}
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-icon">A</div>
+          <div className="brand-icon">
+            <Zap size={16} strokeWidth={2.5} />
+          </div>
           <div className="brand-text">Ad Flow Pro</div>
         </div>
         
@@ -40,6 +56,25 @@ export default function DashboardLayout() {
             </NavLink>
           ))}
         </nav>
+
+        {/* User info + logout at bottom of sidebar */}
+        <div className="sidebar-footer">
+          <div className="sidebar-user">
+            <div className="sidebar-avatar">{initials}</div>
+            <div className="sidebar-user-info">
+              <div className="sidebar-user-name">{user?.name ?? 'User'}</div>
+              <div className="sidebar-user-email">{user?.email}</div>
+            </div>
+          </div>
+          <button
+            className="sidebar-logout-btn"
+            onClick={handleLogout}
+            title="Sign out"
+            aria-label="Sign out"
+          >
+            <LogOut size={17} />
+          </button>
+        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -52,7 +87,7 @@ export default function DashboardLayout() {
               <Calendar size={16} />
               Last 30 Days
             </button>
-            <div className="avatar"></div>
+            <div className="avatar">{initials}</div>
           </div>
         </header>
 
