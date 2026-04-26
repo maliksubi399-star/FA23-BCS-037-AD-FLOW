@@ -6,6 +6,7 @@ import { Eye, EyeOff, Zap, Lock, Mail } from 'lucide-react';
 const DEMO_EMAIL = 'maliksubhan@gmail.com';
 const DEMO_PASSWORD = '123456789';
 
+
 export default function Login({ onLogin }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -16,6 +17,7 @@ export default function Login({ onLogin }) {
   const [shake, setShake] = useState(false);
 
   const handleSubmit = async (e) => {
+    ``
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -34,11 +36,7 @@ export default function Login({ onLogin }) {
     }
   };
 
-  const fillDemo = () => {
-    setEmail(DEMO_EMAIL);
-    setPassword(DEMO_PASSWORD);
-    setError('');
-  };
+
 
   return (
     <div className="login-page">
@@ -61,7 +59,7 @@ export default function Login({ onLogin }) {
           <p className="login-subtitle">Sign in to your dashboard to continue</p>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit} noValidate>
+        <form className="login-form" onSubmit={handleSubmit} noValidate autoComplete="off">
           {/* Email field */}
           <div className="login-field">
             <label className="login-label" htmlFor="login-email">Email address</label>
@@ -74,7 +72,7 @@ export default function Login({ onLogin }) {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                autoComplete="username"
+                autoComplete="off"
                 required
               />
             </div>
@@ -97,7 +95,7 @@ export default function Login({ onLogin }) {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
               />
               <button
@@ -139,13 +137,7 @@ export default function Login({ onLogin }) {
           </button>
         </form>
 
-        {/* Demo credentials hint */}
-        <div className="login-demo">
-          <span className="login-demo-label">Demo access:</span>
-          <button type="button" className="login-demo-btn" onClick={fillDemo}>
-            Fill demo credentials
-          </button>
-        </div>
+
 
         <p className="login-footer">
           By signing in you agree to our{' '}
