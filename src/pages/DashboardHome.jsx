@@ -1,57 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, DollarSign, MousePointerClick, Eye, Target } from 'lucide-react';
+import { DataStore } from '../utils/DataStore';
 
 const mockChartData = [
   45, 60, 35, 80, 55, 90, 70, 85, 40, 65, 50, 75, 85, 95
 ];
 
-const campaignsData = [
-  {
-    id: 1,
-    name: 'Q3 Premium Web Dev Push',
-    status: 'Active',
-    spend: '$4,250',
-    cpa: '$12.50',
-    conversions: 340,
-    image: '/images/image1.jpeg'
-  },
-  {
-    id: 2,
-    name: 'Digital Marketing Outreach',
-    status: 'Active',
-    spend: '$1,800',
-    cpa: '$8.20',
-    conversions: 219,
-    image: '/images/image2.jpeg'
-  },
-  {
-    id: 3,
-    name: 'E-Comm Store Launch Promo',
-    status: 'Paused',
-    spend: '$8,400',
-    cpa: '$15.00',
-    conversions: 560,
-    image: '/images/image3.jpeg'
-  },
-  {
-    id: 4,
-    name: 'Retargeting Node Alpha',
-    status: 'Active',
-    spend: '$950',
-    cpa: '$5.40',
-    conversions: 175,
-    image: '/images/image4.jpeg'
-  }
-];
-
 export default function DashboardHome() {
+  const [metrics, setMetrics] = useState({
+    totalSpend: '0',
+    totalConversions: '0',
+    totalImpressions: '0M',
+    avgCTR: '0%'
+  });
+  const [recentCampaigns, setRecentCampaigns] = useState([]);
+
+  // Load data on mount and listen for updates
+  useEffect(() => {
+    const loadData = () => {
+      setMetrics(DataStore.getMetrics());
+      const all = DataStore.getCampaigns();
+      // Show 4 most recent
+      setRecentCampaigns(all.slice(0, 4));
+    };
+
+    loadData();
+    window.addEventListener('afp_data_update', loadData);
+    return () => window.removeEventListener('afp_data_update', loadData);
+  }, []);
+
   return (
     <>
       {/* Metrics Grid */}
       <div className="metrics-grid">
         <div className="metric-card">
           <div className="metric-title">Total Ad Spend</div>
-          <div className="metric-value">$15,400</div>
+          <div className="metric-value">${metrics.totalSpend}</div>
           <div className="metric-change change-pos">
             <TrendingUp size={14} /> +12.5% vs last month
           </div>
@@ -60,7 +44,7 @@ export default function DashboardHome() {
         
         <div className="metric-card">
           <div className="metric-title">Total Impressions</div>
-          <div className="metric-value">2.4M</div>
+          <div className="metric-value">{metrics.totalImpressions}</div>
           <div className="metric-change change-pos">
             <TrendingUp size={14} /> +8.2% vs last month
           </div>
@@ -78,7 +62,7 @@ export default function DashboardHome() {
         
         <div className="metric-card">
           <div className="metric-title">Total Conversions</div>
-          <div className="metric-value">1,294</div>
+          <div className="metric-value">{metrics.totalConversions}</div>
           <div className="metric-change change-pos">
             <TrendingUp size={14} /> +24.4% vs last month
           </div>
@@ -116,7 +100,7 @@ export default function DashboardHome() {
               </tr>
             </thead>
             <tbody>
-              {campaignsData.map((camp) => (
+              {recentCampaigns.map((camp) => (
                 <tr key={camp.id}>
                   <td>
                     <div className="campaign-cell">
@@ -125,14 +109,24 @@ export default function DashboardHome() {
                     </div>
                   </td>
                   <td>
-                    <span className={`status-badge ${camp.status === 'Active' ? 'status-active' : 'status-paused'}`}>
+                    <span className={`status-badge ${
+                      camp.status === 'Active' ? 'status-active' : 
+                      camp.status === 'Under Review' ? 'status-paused' : 'status-outline'
+                    }`}>
                       {camp.status}
                     </span>
                   </td>
-                  <td style={{ color: '#f8fafc', fontWeight: 600 }}>{camp.spend}</td>
-                  <td>{camp.cpa}</td>
+                  <td style={{ color: '#f8fafc', fontWeight: 600 }}>${(camp.spend || 0).toLocaleString()}</td>
+                  <td>${camp.cpa || '0'}</td>
                 </tr>
               ))}
+              {recentCampaigns.length === 0 && (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: 'center', color: 'var(--text-tertiary)', padding: '2rem' }}>
+                    No campaigns yet.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
