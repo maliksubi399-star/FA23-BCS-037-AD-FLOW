@@ -29,7 +29,13 @@ function useAuth() {
     setUser(null);
   };
 
-  return { user, login, logout };
+  const updateUser = (newData) => {
+    const updated = { ...user, ...newData };
+    sessionStorage.setItem('afp_user', JSON.stringify(updated));
+    setUser(updated);
+  };
+
+  return { user, login, logout, updateUser };
 }
 
 // Guard wrapper for protected routes
@@ -39,7 +45,7 @@ function RequireAuth({ user, children }) {
 }
 
 export default function App() {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, updateUser } = useAuth();
 
   return (
     <Routes>
@@ -60,7 +66,7 @@ export default function App() {
         path="/"
         element={
           <RequireAuth user={user}>
-            <DashboardLayout user={user} onLogout={logout} />
+            <DashboardLayout user={user} onLogout={logout} onUpdateUser={updateUser} />
           </RequireAuth>
         }
       >

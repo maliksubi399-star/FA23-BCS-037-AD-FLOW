@@ -19,7 +19,7 @@ const navItems = [
   { name: 'Settings',   path: '/settings',  icon: Settings },
 ];
 
-export default function DashboardLayout({ user, onLogout }) {
+export default function DashboardLayout({ user, onLogout, onUpdateUser }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -92,7 +92,7 @@ export default function DashboardLayout({ user, onLogout }) {
         </header>
 
         {/* Dynamic Route Rendering */}
-        <Outlet />
+        <Outlet context={{ user, onUpdateUser }} />
       </main>
     </div>
   );
